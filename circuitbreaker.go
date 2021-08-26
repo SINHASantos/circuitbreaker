@@ -354,6 +354,13 @@ func (cb *Breaker) ErrorRate() float64 {
 // Ready will return true if the circuit breaker is ready to call the function.
 // It will be ready if the breaker is in a reset state, or if it is time to retry
 // the call for auto resetting.
+//
+// Note that if Ready returns true, the caller has an obligation to carry out what-
+// ever operation the breaker is protecting, and to call either Success or Fail.
+// It is not permissible to call Ready simply as a means to check whether the
+// breaker is open. This is because the breaker relies on recruiting requests to
+// transition from a tripped to an open state by occasionally returning true from
+// this method.
 func (cb *Breaker) Ready() bool {
 	state := cb.state()
 	if state == halfopen {
